@@ -14,10 +14,12 @@ import Style from 'ol/style/Style';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
-import Draw from 'ol/interaction/Draw';
-import GeometryType from 'ol/geom/GeometryType';
 import LineString from 'ol/geom/LineString';
 import Circle from 'ol/style/Circle';
+import "./import_jquery.js";
+import 'jquery-ui-bundle';
+import 'jquery-ui-bundle/jquery-ui.css';
+import { tokenToString } from 'typescript';
 
 proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
 register(proj4);
@@ -116,43 +118,42 @@ const map2 = new Map({
   view: view2
 });
 
-let draw = new Draw({
-  source: vorschlag,
-  type: GeometryType.POINT,
-});
-map2.addInteraction(draw);
-
-draw.on('drawend',
-
-  () => {
-    if (vorschlag.getFeatures().length < 1) return;
-    let ps = vorschlag.getFeatures();
-    let p = (<Point>ps.pop().getGeometry()).getCoordinates();
-    let xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "/" + nutzer + '?' + p[0] + '&' + p[1], true);
-    xhttp.send();
-  }
-
-)
+map2.on('click', (e) => {
+  let coord = e.coordinate;
+  vorschlag.clear();
+  vorschlag.addFeature(new Feature(new Point(coord)));
+  let xhttp = new XMLHttpRequest();
+  xhttp.open("GET", "/" + nutzer + '?' + coord[0] + '&' + coord[1], true);
+  xhttp.send();
+})
 
 view2.fit([548365, 5916918, 588010, 5955161]);
 
-var countdown = document.createElement('div');
-document.body.appendChild(countdown);
-countdown.style.position = 'absolute';
-countdown.style.top = '50px';
-countdown.style.left = '0';
-countdown.style.width = '50%';
-countdown.style.textAlign = 'center';
-countdown.style.fontFamily = 'Arial sans-serif';
-countdown.style.fontSize = '30pt';
-countdown.style.textShadow = '0px 0px 10px red';
+var countdown = document.getElementById('countdown');
 
-let nutzer = window.prompt("Nutzername:");
+function submit () {
+  nutzer = (<HTMLInputElement>document.getElementById('name')).value;
+  setInterval(interval, 1000);
+  if (nutzer.length > 1) dialog.dialog("close");
+}
+
+document.getElementById("form").addEventListener("submit", submit)
+
+let nutzer = null;
+let dialog = $('#dialog-form').dialog({
+  height: 400,
+  width: 350,
+  modal: true,
+  buttons: {
+    "Los gehts": submit
+  }
+});
 
 let first = true;
 
-setInterval(() => {
+$('#nachricht').hide();
+
+function interval() {
   let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
@@ -181,9 +182,11 @@ setInterval(() => {
         view2.fit([548365, 5916918, 588010, 5955161]);
         if (vorschlag.getFeatures().length > 0) {
           let p = <Point>vorschlag.getFeatures().pop().getGeometry()
-          if (fromExtent(box).intersectsCoordinate(p.getCoordinates()))
-            alert("Treffer!");
-          else {
+          if (fromExtent(box).intersectsCoordinate(p.getCoordinates())) {
+            $('#nachricht').html("Treffer!");
+            $('#nachricht').show();
+
+          } else {
             let line = new LineString([fromExtent(box).getClosestPoint(p.getCoordinates()), p.getCoordinates()])
             let fline = new Feature(line);
             fline.setStyle(new Style({
@@ -191,27 +194,82 @@ setInterval(() => {
               text: new Text({ text: Math.round(line.getLength()) + ' m', placement: 'line' })
             }))
             loesung.addFeature(new Feature(line));
-            alert(line.getLength())
+            let entf = line.getLength();
+            let text = "Nur "
+            if (entf > 0.8) {
+              text += Math.round(entf / 100) / 10 + ' km'
+            } else {
+              text += Math.round(entf) + ' m'
+            }
+            $('#nachricht').html(text + " entfernt!");
+            $('#nachricht').show();
           }
         } else {
-          alert("nicht mitgemacht")
+          $('#nachricht').html("nicht mitgespielt");
+          $('#nachricht').show();
         }
         console.log(response)
+        let tabR = document.createElement("table");
+        let tabT = document.createElement("table");
+        let liste = [];
         for (let name in response.vorschlaege) {
           console.log(name);
-          let f = new Feature(new Point(response.vorschlaege[name]));
-          f.setStyle(new Style({
-            image: new Circle({
-              fill: new Fill({ color: '#666666' }),
-              stroke: new Stroke({ color: '#222222', width: 2 }),,
-              radius: 5
-            })
-          }))
-          loesung.addFeature(f);
+          if (name != nutzer) {
+            let f = new Feature(new Point([response.vorschlaege[name][0], response.vorschlaege[name][1]]));
+            f.setStyle(new Style({
+              image: new Circle({
+                fill: new Fill({ color: '#666666' }),
+                stroke: new Stroke({ color: '#222222', width: 2 }),
+                radius: 5
+              }),
+              text: new Text({
+                text: name
+              })
+            }))
+            loesung.addFeature(f);
+          }
+          liste.push([name, response.vorschlaege[name][2]])
+        }
+        console.log(liste)
+        liste.sort((a,b)=>{return a[1] - b[1]});
+        for (let e in liste) {
+          
+          document.getElementById('runde').innerText = '';
+          let tr = document.createElement("tr");
+          tabR.appendChild(tr);
+          let tdn = document.createElement("td")
+          tdn.innerText = liste[e][0];
+          let tde = document.createElement("td")
+          tde.innerText = liste[e][1];
+          tr.appendChild(tdn);
+          tr.appendChild(tde);
+          document.getElementById('runde').appendChild(tabR);
+        }
+
+
+        // Bestenliste
+        let bestenliste = [];
+        for (let name in response.bestenliste) {
+          bestenliste.push([name, response.bestenliste[name]]);
+        }
+        bestenliste.sort((a,b)=>{return a[1] - b[1]});
+        for (let e in bestenliste) {
+          
+          document.getElementById('teilnehmer').innerText = '';
+          let tr = document.createElement("tr");
+          tabT.appendChild(tr);
+          let tdn = document.createElement("td")
+          tdn.innerText = bestenliste[e][0];
+          let tde = document.createElement("td")
+          tde.innerText = bestenliste[e][1];
+          tr.appendChild(tdn);
+          tr.appendChild(tde);
+          document.getElementById('teilnehmer').appendChild(tabT);
         }
       } else {
         if (first) return;
         first = true;
+        $('#nachricht').hide();
         loesung.clear();
         vorschlag.clear();
       }
@@ -220,4 +278,4 @@ setInterval(() => {
   xhttp.open("GET", "/" + nutzer, true);
   xhttp.send();
 
-}, 1000);
+}

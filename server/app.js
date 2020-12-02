@@ -59,6 +59,8 @@ function box_random() {
 var coord = point_random();
 var box = box_random();
 var layer = layer_random();
+var added = false;
+var bestenliste = {};
 
 countdown = 30;
 
@@ -69,6 +71,7 @@ setInterval(() => {
         layer = layer_random();
         vorschlaege = {};
         countdown = 30;
+        added = false;
     }
 
 }, 1000);
@@ -91,8 +94,13 @@ http.createServer(function (req, res) {
 
     if (req.url.indexOf("?") > 0) {
         wert = req.url.substr(req.url.indexOf('?') + 1).split('&');
-        if (wert.length == 2)
-            vorschlaege[req.url.substr(1, req.url.indexOf('?') - 1)] = [parseFloat(wert[0]), parseFloat(wert[1])];
+        if (wert.length == 2) {
+            if (countdown > 10) countdown = 10;
+            x = parseFloat(wert[0])
+            y = parseFloat(wert[1])
+            d = Math.sqrt(Math.pow((coord[0] - x),2) + Math.pow((coord[1] -y),2)) - box;
+            vorschlaege[req.url.substr(1, req.url.indexOf('?') - 1)] = [x,y,d];
+        }
     }
 
 
@@ -104,9 +112,20 @@ http.createServer(function (req, res) {
         data[nutzer]++;
     }
 
-    obj = { daten: data, countdown: countdown, layer: layer, box: box, coord: coord }
-    if (countdown < 0)
+    obj = { daten: data, countdown: countdown, layer: layer, box: box, coord: coord}
+    if (countdown < 0) {
         obj['vorschlaege'] = vorschlaege;
+        if (!added) {
+            added = true;
+            for(let name in vorschlaege) {
+                if (name in bestenliste)
+                    bestenliste[name] += vorschlaege[name][2];
+                else
+                    bestenliste[name] = vorschlaege[name][2];
+            }
+        }
+    }
+    obj['bestenliste'] = bestenliste;
     let re = JSON.stringify(obj)
     console.log(re);
     res.end(re);

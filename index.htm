@@ -29,7 +29,7 @@
       font-family: Arial sans-serif;
       font-size: 30pt;
       text-shadow: 0px 0px 10px red;
-      background-color: rgba(255,255,255,0.5);
+      background-color: rgba(255, 255, 255, 0.5);
     }
 
     div.map {
@@ -63,15 +63,58 @@
       text-shadow: 0px 0px 10px red;
     }
 
-    label, input { display:block; }
-    input.text { margin-bottom:12px; width:95%; padding: .4em; }
-    fieldset { padding:0; border:0; margin-top:25px; }
-    h1 { font-size: 1.2em; margin: .6em 0; }
-    div#users-contain { width: 350px; margin: 20px 0; }
-    div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
-    div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
-    .ui-dialog .ui-state-error { padding: .3em; }
-    .validateTips { border: 1px solid transparent; padding: 0.3em; }
+    table td {
+      padding: 2px;
+    }
+
+    label,
+    input {
+      display: block;
+    }
+
+    input.text {
+      margin-bottom: 12px;
+      width: 95%;
+      padding: .4em;
+    }
+
+    fieldset {
+      padding: 0;
+      border: 0;
+      margin-top: 25px;
+    }
+
+    h1 {
+      font-size: 1.2em;
+      margin: .6em 0;
+    }
+
+    div#users-contain {
+      width: 350px;
+      margin: 20px 0;
+    }
+
+    div#users-contain table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    div#users-contain table td,
+    div#users-contain table th {
+      border: 1px solid #eee;
+      padding: .6em 10px;
+      text-align: left;
+    }
+
+    .ui-dialog .ui-state-error {
+      padding: .3em;
+    }
+
+    .validateTips {
+      border: 1px solid transparent;
+      padding: 0.3em;
+    }
   </style>
 </head>
 
@@ -85,23 +128,26 @@
     <div id="teilnehmer"></div>
   </div>
   <div id="maps">
-    
+
     <div id="map1" class="map"></div>
-    <div id="map2" class="map"><div id="nachricht">Moin</div></div>
-    
+    <div id="map2" class="map">
+      <div id="nachricht">Moin</div>
+    </div>
+
   </div>
 
   <div id="dialog-form" title="Nutzername">
-    <p class="validateTips">Bitte hier einen Namen eingeben. Dieser wird temporär gespeichert und ist für alle Nutzer sichtbar.</p>
-   
+    <p class="validateTips">Bitte hier einen Namen eingeben. Dieser wird temporär gespeichert und ist für alle Nutzer
+      sichtbar.</p>
+
     <!--<form id="form">-->
-      
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all">      
+
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all">
     <!--</form>-->
   </div>
 
-  
+
   <script src="./index.ts"></script>
 </body>
 

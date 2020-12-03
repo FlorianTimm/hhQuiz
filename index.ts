@@ -33,7 +33,7 @@ let layer = [
   new TileLayer({
     visible: false,
     source: new TileWMS({
-      url: 'http://geodienste.hamburg.de/HH_WMS_DOP',
+      url: 'https://geodienste.hamburg.de/HH_WMS_DOP',
       params: {
         'LAYERS': '1',
         'FORMAT': 'image/png'
@@ -233,13 +233,13 @@ function interval() {
               text: new Text({
                 text: name,
                 offsetX: 9,
-                offsetY: 8,
+                offsetY: 0,
                 textAlign: 'left'
               })
             }))
             loesung.addFeature(f);
           }
-          liste.push([name, response.vorschlaege[name][2]])
+          liste.push([name, response.vorschlaege[name][2], response.vorschlaege[name][3]]);
         }
         console.log(liste)
 
@@ -253,12 +253,18 @@ function interval() {
           let tdn = document.createElement("td")
           tdn.innerText = liste[e][0];
           let tde = document.createElement("td")
-          tde.innerText = liste[e][1];
-          //let tda = document.createElement("td")
-          //tde.innerText = liste[e][2];
+          tde.innerText = liste[e][1] + ' km';
+          tde.style.borderLeft = '1px solid black';
+          tde.style.textAlign = 'right';
+          let tda = document.createElement("td")
+          tda.innerText = liste[e][2];
+          tda.style.borderLeft = '1px solid black';
+          tda.style.textAlign = 'right';
+          if (liste[e][2] > 0) tda.style.color = '#3FBF7F'
+          else tda.style.color = '#BF3F3F'
           tr.appendChild(tdn);
           tr.appendChild(tde);
-          //tr.appendChild(tda);
+          tr.appendChild(tda);
           document.getElementById('runde').appendChild(tabR);
         }
 
@@ -278,6 +284,8 @@ function interval() {
           tdn.innerText = bestenliste[e][0];
           let tde = document.createElement("td")
           tde.innerText = bestenliste[e][1];
+          tde.style.borderLeft = '1px solid black';
+          tde.style.textAlign = 'right';
           tr.appendChild(tdn);
           tr.appendChild(tde);
           document.getElementById('teilnehmer').appendChild(tabT);

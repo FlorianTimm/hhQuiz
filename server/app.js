@@ -889,8 +889,8 @@ http.createServer(function (req, res) {
                 x = parseFloat(wert[0])
                 y = parseFloat(wert[1])
 
-                d = Math.round(distance([x, y], coord, box)) /1000
-                vorschlaege[req.url.substr(1, req.url.indexOf('?') - 1)] = [x, y, d];
+                d = Math.round(distance([x, y], coord, box)/10) /100
+                vorschlaege[req.url.substr(1, req.url.indexOf('?') - 1)] = [x, y, d, 0];
                 if (countdown > 10) countdown = 10;
             }
         }
@@ -930,20 +930,20 @@ function stabw2(vorschlaege) {
     let durchschnitt = summe / counter;
     let qsum = 0;
     for (let name in vorschlaege) {
-        vorschlaege[name].push(vorschlaege[name][2] - durchschnitt)
+        vorschlaege[name][3] = vorschlaege[name][2] - durchschnitt;
         qsum += Math.pow(vorschlaege[name][3],2);
     }
 
     let stabw = Math.sqrt(qsum / counter)
     for (let name in vorschlaege) {
-        vorschlaege[name][3] = Math.round((-vorschlaege[name][3] / stabw) * 100) / 100;
+        vorschlaege[name][3] = Math.round(-vorschlaege[name][3] / stabw *100)/100;
         console.log(vorschlaege)
         if (vorschlaege[name][2] < 0.02)
             vorschlaege[name][3] += 1;
-        if (name in bestenliste)
-            bestenliste[name] += vorschlaege[name][3];
+        if (name in bestenliste && !isNaN(bestenliste[name]))
+            bestenliste[name] = Math.round((bestenliste[name] + vorschlaege[name][3])*100)/100;
         else
-            bestenliste[name] = vorschlaege[name][3];
+            bestenliste[name] = Math.round(vorschlaege[name][3]*100)/100;
         
     }
 }

@@ -19,7 +19,6 @@ import Circle from 'ol/style/Circle';
 import "./import_jquery.js";
 import 'jquery-ui-bundle';
 import 'jquery-ui-bundle/jquery-ui.css';
-import { tokenToString } from 'typescript';
 
 proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
 register(proj4);
@@ -96,6 +95,13 @@ new VectorLayer({
 }),
 new VectorLayer({
   source: vorschlag,
+  style: new Style({
+    image: new Circle({
+      fill: new Fill({ color: 'rgba(255,150,150,0.5)' }),
+      stroke: new Stroke({ color: '#ff0000', width: 2 }),
+      radius: 5
+    }),
+  })
 })];
 
 const map1 = new Map({
@@ -131,13 +137,15 @@ view2.fit([548365, 5916918, 588010, 5955161]);
 
 var countdown = document.getElementById('countdown');
 
-function submit () {
+function submitForm() {
   nutzer = (<HTMLInputElement>document.getElementById('name')).value;
   setInterval(interval, 1000);
   if (nutzer.length > 1) dialog.dialog("close");
+  return false;
 }
 
-document.getElementById("form").addEventListener("submit", submit)
+//document.getElementById("form").addEventListener("submit", submitForm);
+document.getElementById('name').addEventListener('submit', submitForm);
 
 let nutzer = null;
 let dialog = $('#dialog-form').dialog({
@@ -145,7 +153,7 @@ let dialog = $('#dialog-form').dialog({
   width: 350,
   modal: true,
   buttons: {
-    "Los gehts": submit
+    "Los gehts": submitForm
   }
 });
 
@@ -219,11 +227,14 @@ function interval() {
             f.setStyle(new Style({
               image: new Circle({
                 fill: new Fill({ color: '#666666' }),
-                stroke: new Stroke({ color: '#222222', width: 2 }),
+                stroke: new Stroke({ color: '#2222ff', width: 2 }),
                 radius: 5
               }),
               text: new Text({
-                text: name
+                text: name,
+                offsetX: 9,
+                offsetY: 8,
+                textAlign: 'left'
               })
             }))
             loesung.addFeature(f);
@@ -231,9 +242,11 @@ function interval() {
           liste.push([name, response.vorschlaege[name][2]])
         }
         console.log(liste)
-        liste.sort((a,b)=>{return a[1] - b[1]});
+
+        // Letzte Runde
+        liste.sort((a, b) => { return a[1] - b[1] });
         for (let e in liste) {
-          
+
           document.getElementById('runde').innerText = '';
           let tr = document.createElement("tr");
           tabR.appendChild(tr);
@@ -241,8 +254,11 @@ function interval() {
           tdn.innerText = liste[e][0];
           let tde = document.createElement("td")
           tde.innerText = liste[e][1];
+          //let tda = document.createElement("td")
+          //tde.innerText = liste[e][2];
           tr.appendChild(tdn);
           tr.appendChild(tde);
+          //tr.appendChild(tda);
           document.getElementById('runde').appendChild(tabR);
         }
 
@@ -252,9 +268,9 @@ function interval() {
         for (let name in response.bestenliste) {
           bestenliste.push([name, response.bestenliste[name]]);
         }
-        bestenliste.sort((a,b)=>{return a[1] - b[1]});
+        bestenliste.sort((a, b) => { return b[1] - a[1] });
         for (let e in bestenliste) {
-          
+
           document.getElementById('teilnehmer').innerText = '';
           let tr = document.createElement("tr");
           tabT.appendChild(tr);

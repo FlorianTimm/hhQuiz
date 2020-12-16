@@ -35,7 +35,7 @@ let layer = [
     source: new TileWMS({
       url: 'https://geodienste.hamburg.de/HH_WMS_DOP',
       params: {
-        'LAYERS': '1',
+        'LAYERS': 'DOP',
         'FORMAT': 'image/png'
       },
       attributions: ['Freie und Hansestadt Hamburg, LGV 2019']
@@ -75,7 +75,7 @@ var layer2 = [new TileLayer({
   source: new TileWMS({
     url: 'https://geodienste.hamburg.de/HH_WMS_Geobasiskarten?',
     params: {
-      'LAYERS': '6,10,18,26,14,2,22,30',
+      'LAYERS': 'M100000_farbig,M60000_farbig,M20000_farbig,M5000_farbig,M40000_farbig,M125000_farbig,M10000_farbig,M2500_farbig',
       'FORMAT': 'image/png'
     },
     attributions: ['Freie und Hansestadt Hamburg, LGV 2019']

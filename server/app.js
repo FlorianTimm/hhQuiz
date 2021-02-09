@@ -813,14 +813,25 @@ function inside(point, vs) {
     return inside;
 };
 
-var http = require('http');
-
-var vorschlaege = {};
+import { createServer } from 'http';
 
 var minx = 548365;
 var maxx = 588010;
 var miny = 5916918;
 var maxy = 5955161;
+
+var coord, box, layer, added, countdown;
+var vorschlaege = {};
+var bestenliste = {};
+nextBox();
+
+setInterval(() => {
+    countdown--
+    if (countdown <= -10) {
+        nextBox();
+    }
+
+}, 1000);
 
 function random_between(min, max) {
     return min + (max - min) * Math.random();
@@ -844,29 +855,7 @@ function box_random() {
     return random_between(25, 1000);
 }
 
-var coord = point_random();
-var box = box_random();
-var layer = layer_random();
-var added = false;
-var bestenliste = {};
-
-countdown = 30;
-
-setInterval(() => {
-    countdown--
-    if (countdown <= -10) {
-        coord = point_random();
-        layer = layer_random();
-        box = box_random();
-        vorschlaege = {};
-        countdown = 30;
-        added = false;
-    }
-
-}, 1000);
-
-
-http.createServer(function (req, res) {
+createServer(function (req, res) {
     res.writeHead(200, {
         'Content-Type': 'application/json'
     });
@@ -917,6 +906,27 @@ http.createServer(function (req, res) {
     console.log(re);
     res.end(re);
 }).listen(8080);
+
+function nextBox() {
+    coord = point_random();
+    layer = layer_random();
+    box = box_random();
+    vorschlaege = {};
+    countdown = 30;
+    added = false;
+}
+
+function downloadImage(layer, coord, box) {
+    const http = require('http'); // or 'https' for https:// URLs
+    const fs = require('fs');
+
+    const file = fs.createWriteStream("file.jpg");
+    //TODO
+    const request = http.get("http://to.do/image.jpg", function (response) {
+        response.pipe(file);
+    });
+}
+
 
 function stabw2(vorschlaege) {
     let counter = 0;

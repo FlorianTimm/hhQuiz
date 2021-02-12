@@ -5,9 +5,10 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc",
-    "watch-ts": "tsc -w",
-    "watch-node": "nodemon dist/server.js",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"yarn run watch-ts\" \"yarn run watch-node\"",
+    "watch-ts-server": "tsc -w -p src/server/tsconfig.json",
+    "watch-ts-client": "parcel watch --out-dir dist/client/ --hmr-hostname localhost --public-url . src/client/*.htm",
+    "watch-node": "nodemon dist/server/server.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript Client, TypeScript Server, Node\" -c \"yello.bold, magenta.bold, cyan.bold\" \"yarn run watch-ts-client\" \"yarn run watch-ts-server\" \"yarn run watch-node\"",
     "test": "mocha -r ts-node/register src/**/*.spec.ts"
   },
   "author": "",
@@ -23,6 +24,7 @@
     "jquery": "^3.5.1",
     "jquery-ui": "^1.12.1",
     "jquery-ui-bundle": "^1.12.1-migrate",
+    "jqueryui": "^1.11.1",
     "nodemon": "^2.0.7",
     "ol": "^6.5.0",
     "proj4": "^2.7.0",

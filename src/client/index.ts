@@ -15,7 +15,7 @@ import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
 import LineString from 'ol/geom/LineString';
 import Circle from 'ol/style/Circle';
-import "../import_jquery.js";
+import "./import_jquery.js";
 import 'jquery-ui-bundle';
 import 'jquery-ui-bundle/jquery-ui.css';
 import 'socket.io'

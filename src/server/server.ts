@@ -12,12 +12,11 @@ let http = require("http").Server(app);
 let io = require("socket.io")(http);
 
 app.get("/", (req: any, res: any) => {
-    res.sendFile(path.resolve("./src/index.htm"));
+    res.sendFile(path.resolve("dist/client/index.html"));
 });
+var htmlPath = path.resolve("dist/client/")
 
-app.get("/index.js", (req: any, res: any) => {
-    res.sendFile(path.resolve("./dist/index.js"));
-});
+app.use(express.static(htmlPath));
 
 // whenever a user connects on port 3000 via
 // a websocket, log that a user has connected

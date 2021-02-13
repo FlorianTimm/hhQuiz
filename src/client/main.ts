@@ -12,12 +12,11 @@ import Circle from 'ol/style/Circle';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
-import Polygon, { fromExtent } from 'ol/geom/Polygon';
+import { fromExtent } from 'ol/geom/Polygon';
 import LineString from 'ol/geom/LineString';
 
 function main() {
   const socket: SocketIOClient.Socket = io();
-  const textbox = <HTMLInputElement>document.getElementById("textbox")
   let countdown: number = 0;
   let bildUrl = '';
   let prefetch: HTMLImageElement;

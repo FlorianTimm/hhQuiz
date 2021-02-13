@@ -2,7 +2,6 @@ const PORT = process.env.PORT || 3000
 
 import * as express from 'express';
 import { Server as HTTPServer } from 'http';
-import { coordinateRelationship } from 'ol/extent';
 import * as path from 'path';
 import { Server as SocketServer } from 'socket.io';
 import { KartenQueue } from './KartenQueue';

@@ -81,4 +81,8 @@ export class RightMap extends Map {
   public getVorschlag() {
     return this.vorschlag;
   }
+
+  public getLoesung() {
+    return this.loesung;
+  }
 }

@@ -31,18 +31,23 @@
     "webpack-dev-server": "^3.11.1"
   },
   "dependencies": {
+    "@types/atob": "^2.1.2",
     "@types/jquery": "^3.5.5",
     "@types/jqueryui": "^1.12.14",
     "@types/ol": "^6.4.2",
     "@types/proj4": "^2.5.0",
+    "@types/request": "^2.48.5",
+    "atob": "^2.1.2",
     "basic-auth": "^2.0.1",
     "express": "^4.17.1",
     "file-loader": "^6.2.0",
+    "fs": "^0.0.1-security",
     "jquery": "^3.5.1",
     "jquery-ui-bundle": "^1.12.1-migrate",
     "jqueryui": "^1.11.1",
     "ol": "^6.5.0",
     "proj4": "^2.7.0",
+    "request": "^2.88.2",
     "socket.io": "^3.0.5",
     "socket.io-client": "^3.0.5"
   }

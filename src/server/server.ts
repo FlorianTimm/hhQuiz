@@ -114,9 +114,9 @@ class Server {
   private aufloesen() {
     this.stabw2();
 
-    let liste: [string, number, number][] = [];
+    let liste: [string, number, number, [number, number]][] = [];
     for (let name in this.tipps) {
-      liste.push([name, this.tipps[name].entfernung, this.tipps[name].punkte]);
+      liste.push([name, this.tipps[name].entfernung, this.tipps[name].punkte, this.tipps[name].tipp]);
     }
     // Letzte Runde
     liste.sort((a, b) => { return a[1] - b[1] });
@@ -133,6 +133,8 @@ class Server {
       tipps: liste,
       bestenliste: bestenliste
     });
+    this.tipps = {};
+
   }
 
 

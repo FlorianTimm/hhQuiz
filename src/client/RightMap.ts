@@ -1,6 +1,5 @@
 import 'ol/ol.css';
-import { Map, View } from 'ol';
-import TileLayer from 'ol/layer/Tile';
+import { Map,  View } from 'ol';
 import { register } from 'ol/proj/proj4';
 import { TileWMS as TileWMS } from 'ol/source';
 import { fromLonLat } from 'ol/proj';
@@ -11,6 +10,8 @@ import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Circle from 'ol/style/Circle';
 import proj4 from 'proj4';
+import TileState from 'ol/TileState';
+import Tile from 'ol/layer/Tile';
 
 proj4.defs('WGS84')
 
@@ -42,15 +43,20 @@ export class RightMap extends Map {
   }
 
   private createLayer() {
-    this.addLayer(new TileLayer({
-      source: new TileWMS({
-        url: 'https://geodienste.hamburg.de/HH_WMS_Geobasiskarten?',
-        params: {
-          'LAYERS': 'M100000_farbig,M60000_farbig,M20000_farbig,M5000_farbig,M40000_farbig,M125000_farbig,M10000_farbig,M2500_farbig',
-          'FORMAT': 'image/png'
-        },
-        attributions: ['Freie und Hansestadt Hamburg, LGV 2019']
-      })
+    let source = new TileWMS({
+      url: 'https://geodienste.hamburg.de/HH_WMS_Geobasiskarten?',
+      //url: 'https://geodienste.hamburg.de/HH_WMS_Cache?',
+      params: {
+        'LAYERS': 'M100000_farbig,M60000_farbig,M20000_farbig,M5000_farbig,M40000_farbig,M125000_farbig,M10000_farbig,M2500_farbig',
+        //'LAYERS' : 'stadtplan',
+        'FORMAT': 'image/png'
+      },
+      cacheSize: 300,
+      attributions: ['Freie und Hansestadt Hamburg, LGV 2019']
+    });
+
+    this.addLayer(new Tile({
+      source: source
     }));
 
     this.addLayer(new VectorLayer({

@@ -23,6 +23,6 @@
     "server/server.ts",
     "src/client/server",
     "webpack.config.js",
-    "src/client/import_jquery.js"
+    "src/client/import_jquery.ts"
   ]
 }

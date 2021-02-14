@@ -1,13 +1,11 @@
 
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-//const CopyWebpackPlugin = require('copy-webpack-plugin');
-//const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-  entry: './src/client/main.ts',
+  entry: './src/server/server.ts',
   mode: 'production',
+  target: 'node',
   module: {
     rules: [
       {
@@ -30,28 +28,34 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
+    fallback: {
+      "assert": false,
+      "util": false,
+      "https": false,
+      "path":false,
+      "http": false,
+      "buffer": false,
+      "crypto":false,
+      "stream": false,
+      "zlib": false
+    }
   },
   devtool: 'inline-source-map',
   devServer: {
-    contentBase: './dist/client'
+    contentBase: './dist/server'
   },
   plugins: [
     new CleanWebpackPlugin({
-      cleanOnceBeforeBuildPatterns: ['dist/client']
+      cleanOnceBeforeBuildPatterns: ['dist/server']
     }),
-    new HtmlWebpackPlugin({
-      template: 'src/client/index.htm',
-      publicPath: 'dist/client'
-    }),
-    /*new CopyWebpackPlugin(
-      [
-        // copies go here
-      ]
-    )*/
   ],
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist/client')
+    path: path.resolve(__dirname, 'dist/server')
+  },
+  externals: {
+    bufferutil: "bufferutil",
+    "utf-8-validate": "utf-8-validate",
   }
 }

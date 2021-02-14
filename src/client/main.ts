@@ -93,9 +93,10 @@ function main() {
     setCountdownImages(data.show, data.preload, data.countdown);
   })
 
-  socket.on('loesung', (data: { loesung: [number, number], box: number, tipps: [], bestenliste: [] }) => {
+  socket.on('loesung', (data: { loesung: [number, number], box: number, tipps: [string, number, number, [number, number]][], bestenliste: [] }) => {
     map.getLoesung().clear()
-    let box = fromExtent([data.loesung[0], data.loesung[1], data.loesung[0] + data.box, data.loesung[1] + data.box])
+    
+    let box = fromExtent([data.loesung[0] - data.box, data.loesung[1] - data.box, data.loesung[0] + data.box, data.loesung[1] + data.box])
     map.getLoesung().addFeature(new Feature(box));
     map.getView().fit([548365, 5916918, 588010, 5955161]);
     if (map.getVorschlag().getFeatures().length > 0) {
@@ -125,16 +126,14 @@ function main() {
     } else {
       $('#nachricht').html("nicht mitgespielt");
       $('#nachricht').show();
-    }
+    }  
 
-
+    document.getElementById('runde').innerText = '';
     let tabR = document.createElement("table");
-    let tabT = document.createElement("table");
-
     for (let e in data.tipps) {
       let name = data.tipps[e][0];
       if (name != nutzer) {
-        let f = new Feature(new Point([data.tipps[name][0], data.tipps[name][1]]));
+        let f = new Feature(new Point([data.tipps[e][3][0], data.tipps[e][3][1]]));
         f.setStyle(new Style({
           image: new Circle({
             fill: new Fill({ color: '#666666' }),
@@ -142,7 +141,7 @@ function main() {
             radius: 5
           }),
           text: new Text({
-            text: data.tipps[e][0],
+            text: name,
             offsetX: 9,
             offsetY: 0,
             textAlign: 'left'
@@ -151,8 +150,8 @@ function main() {
         map.getLoesung().addFeature(f);
       }
 
-      document.getElementById('runde').innerText = '';
       let tr = document.createElement("tr");
+      if (name == nutzer) tr.style.textDecoration = 'underline';
       tabR.appendChild(tr);
       let tdn = document.createElement("td")
       tdn.innerText = data.tipps[e][0];
@@ -173,8 +172,9 @@ function main() {
     }
 
     // Bestenliste
+    document.getElementById('teilnehmer').innerText = '';
+    let tabT = document.createElement("table");
     for (let e in data.bestenliste) {
-      document.getElementById('teilnehmer').innerText = '';
       let tr = document.createElement("tr");
       tabT.appendChild(tr);
       let tdn = document.createElement("td")

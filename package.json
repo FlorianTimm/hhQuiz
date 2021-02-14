@@ -9,10 +9,11 @@
   "author": "Florian Timm",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
-    "watch": "webpack --watch",
+    "build-client": "webpack",
+    "build-server": "webpack -c webpack.server.config.js",
+    "watch-client": "webpack --watch ",
     "postinstall": "webpack",
-    "start": "nodemon src/server/server.ts"
+    "watch-server": "nodemon src/server/server.ts"
   },
   "devDependencies": {
     "@types/express": "^4.17.11",
@@ -39,6 +40,7 @@
     "@types/request": "^2.48.5",
     "atob": "^2.1.2",
     "basic-auth": "^2.0.1",
+    "etag": "^1.8.1",
     "express": "^4.17.1",
     "file-loader": "^6.2.0",
     "fs": "^0.0.1-security",

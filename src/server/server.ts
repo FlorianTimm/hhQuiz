@@ -155,10 +155,10 @@ class Server {
       }
 
       let stabw = (counter <= 0) ? 0 : Math.sqrt(qsum / counter);
-
-      for (let name in this.tipps) {
-        this.tipps[name].punkte = Math.round(-this.tipps[name].punkte / stabw * 100) / 100;
-        console.log(this.tipps)
+      if (stabw > 0) {
+        for (let name in this.tipps) {
+          this.tipps[name].punkte = Math.round(-this.tipps[name].punkte / stabw * 100) / 100;
+        }
       }
     }
     for (let name in this.tipps) {

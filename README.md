@@ -3,6 +3,6 @@
 
 # TODO
 - [ ] Kilometerumrechnung
-- [ ] Treffer alleine
-- [ ] alle Treffen
+- [x] Treffer alleine
+- [x] alle Treffen
 - [ ] keine Bilder laden ohne Teilnehmer

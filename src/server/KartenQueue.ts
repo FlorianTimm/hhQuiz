@@ -14,9 +14,14 @@ export class KartenQueue {
 
     public constructor(io: SocketServer) {
         this.io = io;
-        if (fs.existsSync(this.imgPath))
-            fs.rmdirSync(this.imgPath, { recursive: true });
-        fs.mkdirSync(this.imgPath);
+        try {
+            if (fs.existsSync(this.imgPath))
+                fs.rmdirSync(this.imgPath, { recursive: true });
+            fs.mkdirSync(this.imgPath);
+        } catch (error) {
+
+        }
+
         this.boxCreator = new BoxCreator();
         setInterval(this.checkQueue.bind(this), 2000);
     }
@@ -58,7 +63,7 @@ export class KartenQueue {
 
     public nextImage() {
         let deleteImg = this.queue[0].image;
-        fs.unlink(deleteImg, ()=>{})
+        fs.unlink(deleteImg, () => { })
         return this.queue.shift();
     }
 
@@ -70,11 +75,11 @@ export class KartenQueue {
         return this.queue[0].image;
     }
 
-    public aktuelleBox():number {
+    public aktuelleBox(): number {
         return this.queue[0].box;
     }
 
-    public aktuelleKoord():[number,number] {
+    public aktuelleKoord(): [number, number] {
         return this.queue[0].coord;
     }
 }

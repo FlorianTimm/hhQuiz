@@ -6,7 +6,7 @@ import { RightMap } from './RightMap';
 import "./import_jquery.js";
 import 'jquery-ui-bundle';
 import 'jquery-ui-bundle/jquery-ui.css';
-import './style.css';
+import './index.css';
 import Style from 'ol/style/Style';
 import Circle from 'ol/style/Circle';
 import Fill from 'ol/style/Fill';
@@ -69,7 +69,7 @@ function main() {
 
   window.addEventListener("beforeunload", () => { socket.emit("Ende", nutzer) })
 
-  let map = new RightMap();
+  let map = new RightMap('map2');
   map.on('click', (e) => {
     if (countdown <= 0) return;
 

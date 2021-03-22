@@ -1,5 +1,5 @@
 import 'ol/ol.css';
-import { Map,  View } from 'ol';
+import { Map, View } from 'ol';
 import { register } from 'ol/proj/proj4';
 import { TileWMS as TileWMS } from 'ol/source';
 import { fromLonLat } from 'ol/proj';
@@ -10,7 +10,6 @@ import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Circle from 'ol/style/Circle';
 import proj4 from 'proj4';
-import TileState from 'ol/TileState';
 import Tile from 'ol/layer/Tile';
 
 proj4.defs('WGS84')
@@ -19,16 +18,16 @@ export class RightMap extends Map {
   private loesung: VectorSource;
   private vorschlag: VectorSource;
 
-  constructor() {
+  constructor(target: string) {
     super({
-      target: 'map2'
+      target: target
     })
     this.loesung = new VectorSource({ wrapX: false });
     this.vorschlag = new VectorSource({ wrapX: false });
 
     proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     register(proj4);
-    
+
     this.createMap();
   }
 

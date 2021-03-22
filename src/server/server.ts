@@ -17,6 +17,7 @@ class Server {
   private tipps: { [nutzer: string]: { tipp: [number, number], entfernung: number, punkte: number } } = {};
   private bestenliste: { [nutzer: string]: number } = {}
   private interval: NodeJS.Timeout;
+  private stop: boolean = false;
 
   public constructor() {
     this.app = express()
@@ -50,6 +51,20 @@ class Server {
 
       socket.on('vorschlag', (data: { box: number; coord: [number, number]; layer: number; }) => {
         this.karten_queue.addVorschlag(data.box, data.coord, data.layer);
+      });
+
+      socket.on('stop', () => {
+        this.stop = true;
+      });
+
+      socket.on('start', () => {
+        this.stop = false;
+        this.naechstesBild();
+      });
+
+      socket.on('reset', () => {
+        this.bestenliste = {};
+        this.tipps = {};
       });
     });
 
@@ -173,6 +188,7 @@ class Server {
   }
 
   private naechstesBild() {
+    if (this.stop) return
     this.counter = 30;
     this.karten_queue.nextImage();
     this.io.emit('naechstes', { show: this.karten_queue.aktuellesBild(), preload: this.karten_queue.naechstesBild(), countdown: this.counter });
@@ -197,6 +213,10 @@ class Server {
 
     this.app.get('', (request, response) => {
       response.sendFile(path.join(__dirname, '../../dist/client/index.html'));
+    });
+
+    this.app.get('/admin.html', (request, response) => {
+      response.sendFile(path.join(__dirname, '../../dist/client/admin.html'));
     });
 
     this.server.listen(PORT, () => {

@@ -3,10 +3,27 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 //const CopyWebpackPlugin = require('copy-webpack-plugin');
-//const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-  entry: './src/client/main.ts',
+  entry: {
+    main: {
+      import: './src/client/main.ts'
+    },
+    admin: {
+      import: './src/client/admin.ts'
+    },
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      `...`,
+      new MiniCssExtractPlugin(),
+    ],
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
   mode: 'production',
   module: {
     rules: [
@@ -40,9 +57,21 @@ module.exports = {
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: ['dist/client']
     }),
-    new HtmlWebpackPlugin({
+    /*new HtmlWebpackPlugin({
       template: 'src/client/index.htm',
       publicPath: 'dist/client'
+    }),*/
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      publicPath: 'dist/client',
+      template: 'src/client/index.htm',
+      chunks: ['main']
+    }),
+    new HtmlWebpackPlugin({ // Also generate a test.html
+      filename: 'admin.html',
+      publicPath: 'dist/client',
+      template: 'src/client/admin.htm',
+      chunks: ['admin']
     }),
     /*new CopyWebpackPlugin(
       [

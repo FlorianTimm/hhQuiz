@@ -13,8 +13,8 @@ class Admin {
             let view = this.map.getView();
             let extent = view.calculateExtent();
             let vorschlag: { box: number; coord: [number, number]; layer: number; } = {
-                'box': Math.round((extent[2] - extent[0])/2),
-                'coord':[ view.getCenter()[0], view.getCenter()[1]],
+                'box': Math.round((extent[2] - extent[0]) / 2),
+                'coord': [view.getCenter()[0], view.getCenter()[1]],
                 'layer': <number>$('#layer').val()
             };
             console.log(vorschlag)
@@ -22,9 +22,18 @@ class Admin {
         }
         )
 
-        $('#stop').on("click", () => {this.socket.emit("stop")})
-        $('#start').on("click", () => {this.socket.emit("start")})
-        $('#reset').on("click", () => {this.socket.emit("reset")})
+        $('#stop').on("click", () => { this.socket.emit("stop") })
+        $('#start').on("click", () => { this.socket.emit("start") })
+        $('#reset').on("click", () => { this.socket.emit("reset") })
+        $('#zeit').on("click", () => {
+            let data: { rateZeit: number, maxZeitNachRaten: number, aufloeseZeit: number } =
+            {
+                rateZeit: <number> $('#rateZeit').val(),
+                maxZeitNachRaten: <number> $('#maxZeitNachRaten').val(),
+                aufloeseZeit: <number> $('#aufloeseZeit').val(),
+            }
+            this.socket.emit("time",data)
+        })
     }
 }
 

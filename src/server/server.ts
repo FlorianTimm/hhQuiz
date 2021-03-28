@@ -7,7 +7,7 @@ import { Server as SocketServer } from 'socket.io';
 import { KartenQueue } from './KartenQueue';
 
 
-const INTERVAL = 10000;
+const INTERVAL = 1;
 class Server {
   private io: SocketServer;
   private server: HTTPServer;
@@ -17,7 +17,10 @@ class Server {
   private tipps: { [nutzer: string]: { tipp: [number, number], entfernung: number, punkte: number } } = {};
   private bestenliste: { [nutzer: string]: number } = {}
   private interval: NodeJS.Timeout;
-  private stop: boolean = false;
+  private rateZeit = 30;
+  private maxZeitNachRaten = 10;
+  private aufloeseZeit = 10;
+  private aufgeloest: boolean = false;
 
   public constructor() {
     this.app = express()
@@ -54,44 +57,56 @@ class Server {
       });
 
       socket.on('stop', () => {
-        this.stop = true;
+        clearInterval(this.interval);
       });
 
       socket.on('start', () => {
-        this.stop = false;
-        this.naechstesBild();
+        clearInterval(this.interval);
+        this.interval = setInterval(() => { this.intervalTick() }, INTERVAL*1000);
       });
 
       socket.on('reset', () => {
         this.bestenliste = {};
         this.tipps = {};
       });
+
+      socket.on('time', (data: {rateZeit: number, maxZeitNachRaten: number, aufloeseZeit: number})=> {
+        this.rateZeit = data.rateZeit;
+        this.maxZeitNachRaten = data.maxZeitNachRaten;
+        this.aufloeseZeit = data.aufloeseZeit;
+        console.log(this.rateZeit)
+        console.log(this.maxZeitNachRaten)
+        console.log(this.aufloeseZeit)
+      })
     });
 
     await this.karten_queue.checkQueue();
-    this.interval = setInterval(() => { this.intervalTick() }, INTERVAL);
+    this.interval = setInterval(() => { this.intervalTick() }, INTERVAL*1000);
   }
 
   private intervalTick() {
-    this.counter -= 10;
+    this.counter -= INTERVAL;
 
-    if (this.counter <= -10) {
+
+    if (this.counter <= -this.aufloeseZeit) {
       this.naechstesBild();
-    } else if (this.counter <= 0) {
+    } else if (!this.aufgeloest && this.counter <= 0) {
       this.aufloesen();
-    }
-    //this.io.emit('countdown', );
+    } else if (this.counter % 5 == 0) {
+      //this.io.emit('countdown', );
     this.io.emit('countdown', this.counter);
     console.log(this.counter);
+    }
+    
   }
 
   private tippAbgegeben(data: { nutzer: string; bild: string; coord: [number, number]; }) {
     console.log(data);
     if (this.karten_queue.aktuellesBild() != data.bild || this.counter <= 0) return;
-    if (this.counter > 10) {
-      this.counter = 10;
+    if (this.counter > this.maxZeitNachRaten) {
+      this.counter = this.maxZeitNachRaten;
       clearTimeout(this.interval);
-      this.interval = setInterval(() => { this.intervalTick() }, INTERVAL);
+      this.interval = setInterval(() => { this.intervalTick() }, INTERVAL *1000);
       this.io.emit('countdown', this.counter);
     }
 
@@ -102,24 +117,24 @@ class Server {
   private distance(tipp: [number, number], loesung: [number, number], box: number) {
     if (tipp[0] > (loesung[0] - box) && tipp[0] < (loesung[0] + box)) {
       if (tipp[1] > loesung[1] + box)
-        return tipp[1] - loesung[1] - box;
-      if (tipp[1] < loesung[1] - box)
-        return loesung[1] - tipp[1] - box;
+        return Math.round(tipp[1] - loesung[1] - box)/1000;
+      else if (tipp[1] < loesung[1] - box)
+        return Math.round(loesung[1] - tipp[1] - box)/1000;
       else
         return 0
     } else if (tipp[1] > (loesung[1] - box) && tipp[1] < (loesung[1] + box)) {
       if (tipp[0] > loesung[0] + box)
-        return tipp[0] - loesung[0] - box;
-      if (tipp[0] < loesung[0] - box)
-        return loesung[0] - tipp[0] - box;
+        return Math.round(tipp[0] - loesung[0] - box)/1000;
+      else if (tipp[0] < loesung[0] - box)
+        return Math.round(loesung[0] - tipp[0] - box)/1000;
       else
         return 0
     }
 
-    return Math.min(this.simple_distance(tipp, [loesung[0] + box, loesung[1] + box]),
+    return (Math.min(this.simple_distance(tipp, [loesung[0] + box, loesung[1] + box]),
       this.simple_distance(tipp, [loesung[0] - box, loesung[1] + box]),
       this.simple_distance(tipp, [loesung[0] - box, loesung[1] - box]),
-      this.simple_distance(tipp, [loesung[0] + box, loesung[1] - box])) / 1000;
+      this.simple_distance(tipp, [loesung[0] + box, loesung[1] - box])) / 1000);
   }
 
   private simple_distance(punktA: [number, number], punktB: [number, number]) {
@@ -127,6 +142,7 @@ class Server {
   }
 
   private aufloesen() {
+    this.aufgeloest = true;
     this.stabw2();
 
     let liste: [string, number, number, [number, number]][] = [];
@@ -188,10 +204,10 @@ class Server {
   }
 
   private naechstesBild() {
-    if (this.stop) return
-    this.counter = 30;
+    this.counter = this.rateZeit;
     this.karten_queue.nextImage();
     this.io.emit('naechstes', { show: this.karten_queue.aktuellesBild(), preload: this.karten_queue.naechstesBild(), countdown: this.counter });
+    this.aufgeloest = false;
   }
 
   private expressApp() {

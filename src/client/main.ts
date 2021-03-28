@@ -156,11 +156,11 @@ function main() {
       let tdn = document.createElement("td")
       tdn.innerText = data.tipps[e][0];
       let tde = document.createElement("td")
-      tde.innerText = data.tipps[e][1] + ' km';
+      tde.innerText = data.tipps[e][1].toFixed(3).replace(".", ",") + ' km';
       tde.style.borderLeft = '1px solid black';
       tde.style.textAlign = 'right';
       let tda = document.createElement("td")
-      tda.innerText = String(data.tipps[e][2]);
+      tda.innerText = data.tipps[e][2].toFixed(2).replace(".", ",");
       tda.style.borderLeft = '1px solid black';
       tda.style.textAlign = 'right';
       if (data.tipps[e][2] > 0) tda.style.color = '#3FBF7F'
@@ -180,7 +180,7 @@ function main() {
       let tdn = document.createElement("td")
       tdn.innerText = String(data.bestenliste[e][0]);
       let tde = document.createElement("td")
-      tde.innerText = String(data.bestenliste[e][1]);
+      tde.innerText = (<number> data.bestenliste[e][1]).toFixed(2).replace(".", ",");
       tde.style.borderLeft = '1px solid black';
       tde.style.textAlign = 'right';
       tr.appendChild(tdn);
